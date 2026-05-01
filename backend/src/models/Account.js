@@ -33,24 +33,25 @@ const accountSchema = new mongoose.Schema({
   },
 }, { timestamps: true });
 
-accountSchema.pre('validate', function(next) {
+// Middleware : Vérification AVANT la validation
+accountSchema.pre('validate', function() {
   // On vérifie qu'au moins l'un des deux identifiants est présent
   if (!this.email && !this.socialSecurityNumber) {
-    next(new Error('Vous devez fournir soit une adresse email, soit un numéro de sécurité sociale pour créer un compte.'));
-  } else {
-    next(); // Tout va bien, on continue
+    // Plus de next(), on "jette" directement l'erreur
+    throw new Error('Vous devez fournir soit une adresse email, soit un numéro de sécurité sociale pour créer un compte.');
   }
 });
 
-// Middleware (Hook) Mongoose : Hachage du mot de passe AVANT la sauvegarde
-accountSchema.pre('save', async function(next) {
-  // Si le mot de passe n'a pas été modifié, on passe à la suite
-  if (!this.isModified('password')) return next();
-  
-  // Scramble le mot de passe avec bcrypt
-  const salt = await bcrypt.genSalt(12);
+// Middleware : Hachage du mot de passe AVANT la sauvegarde
+accountSchema.pre('save', async function () {
+  // Si le mot de passe n'a pas été modifié, on ne le re-crypte pas
+  if (!this.isModified('password')) {
+    return; // Plus de next(), un simple return suffit
+  }
+
+  // Pas besoin de try/catch, Mongoose gère automatiquement les erreurs dans les fonctions async
+  const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
-  next();
 });
 
 // Méthode pour comparer les mots de passe lors de la connexion
