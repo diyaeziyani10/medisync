@@ -54,7 +54,9 @@ exports.register = async (req, res) => {
       profile = await PatientProfile.create({
         account: account._id,
         firstName,
-        lastName
+        lastName,
+        phoneNumber,
+        dependents
       });
     }
 

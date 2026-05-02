@@ -8,7 +8,7 @@ const adminRoutes = require('./src/routes/adminRoutes');
 const appointmentRoutes = require('./src/routes/appointmentRoutes');
 const authRoutes = require('./src/routes/authRoutes');
 const recordRoutes = require('./src/routes/recordRoutes');
-
+const doctorRoutes = require('./src/routes/doctorRoutes');
 connectDB();
 
 const app = express();
@@ -22,7 +22,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/appointments', appointmentRoutes);
 app.use('/api/records', recordRoutes);
-
+app.use('/api/doctors', doctorRoutes);
 // Middleware global de gestion d'erreurs
 app.use((err, req, res, next) => {
   console.error(err.stack);

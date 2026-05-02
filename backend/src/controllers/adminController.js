@@ -5,8 +5,7 @@ const SecretaryProfile = require('../models/SecretaryProfile');
 
 exports.createStaffAccount = async (req, res) => {
   try {
-    const { email, password, role, firstName, lastName, specialty, baseFee } = req.body;
-
+    const { email, password, role, firstName, lastName, specialties, languages, location, sector, baseFee } = req.body;
     // 1. Sécurité : On vérifie que l'admin n'essaie pas de créer un patient ici (il y a une route pour ça)
     if (!['medecin', 'secretaire'].includes(role)) {
       return res.status(400).json({ message: "Cette route est réservée à la création du personnel médical." });
@@ -33,7 +32,10 @@ exports.createStaffAccount = async (req, res) => {
         account: newAccount._id,
         firstName,
         lastName,
-        specialty,
+        specialties,
+        languages,
+        location,
+        sector,
         baseFee
       });
     } else if (role === 'secretaire') {

@@ -1,11 +1,10 @@
 const Appointment = require('../models/Appointment');
 const PatientProfile = require('../models/PatientProfile');
-
+const { sendNotification } = require('../utils/sendEmail');
 // 1. Créer un nouveau rendez-vous (Généralement appelé par un Patient)
 exports.createAppointment = async (req, res) => {
   try {
-    const { doctorId, date, time, duration, notes, reason } = req.body;
-
+const { doctorId, dependentId, date, time, duration, notes, reason } = req.body;
     const validDurations = [15, 30, 60];
     if (!validDurations.includes(duration)) {
       return res.status(400).json({ 
@@ -36,10 +35,12 @@ exports.createAppointment = async (req, res) => {
     if (conflict) {
       return res.status(409).json({ message: "Le médecin est déjà occupé sur ce créneau horaire." });
     }
+    const { sendNotification } = require('../utils/sendEmail');
 
     const newAppointment = await Appointment.create({
       patient: patientProfile._id,
       doctor: doctorId,
+      dependentId: dependentId,
       date: startDateTime,
       startTime: startDateTime,
       endTime: endDateTime,
@@ -48,6 +49,16 @@ exports.createAppointment = async (req, res) => {
       status: 'planifié',
       reason: reason
     });
+
+    try {
+        await sendNotification(
+            req.user.email, 
+            "Confirmation de votre rendez-vous - MediSync", 
+            `Bonjour, votre rendez-vous du ${date} à ${time} est confirmé.`
+  );co
+    } catch (emailErr) {
+       console.error("L'email n'a pas pu être envoyé, mais le RDV est créé.");
+}
 
     res.status(201).json({
       message: "Rendez-vous créé avec succès",
