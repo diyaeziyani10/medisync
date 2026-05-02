@@ -1,5 +1,6 @@
 const Account = require('../models/Account');
 const DoctorProfile = require('../models/DoctorProfile');
+const SecretaryProfile = require('../models/SecretaryProfile');
 // const PatientProfile = require('../models/PatientProfile'); // On n'en a pas besoin ici !
 
 exports.createStaffAccount = async (req, res) => {
@@ -26,6 +27,7 @@ exports.createStaffAccount = async (req, res) => {
 
     // 4. Création du profil spécifique
     let profileToReturn;
+    
     if (role === 'medecin') {
       profileToReturn = await DoctorProfile.create({
         account: newAccount._id,
@@ -34,16 +36,25 @@ exports.createStaffAccount = async (req, res) => {
         specialty,
         baseFee
       });
-    } 
-    // Si vous avez un SecretaryProfile, vous ajouteriez un "else if (role === 'secretaire')" ici plus tard
+    } else if (role === 'secretaire') {
+      // NOUVEAU : Création du profil secrétaire
+      profileToReturn = await SecretaryProfile.create({
+        account: newAccount._id,
+        firstName,
+        lastName
+      });
+    }
 
-    // 5. Réponse de succès
     res.status(201).json({
-      message: `Le compte ${role} a été créé avec succès par l'administration.`,
-      accountId: newAccount._id,
+      message: `Compte ${role} créé avec succès.`,
+      account: {
+        id: newAccount._id,
+        email: newAccount.email,
+        role: newAccount.role
+      },
       profile: profileToReturn
     });
-
+    // Si vous avez un SecretaryProfile, vous ajouteriez un "else if (role === 'secretaire')" ici plus tard
   } catch (error) {
     res.status(500).json({ message: "Erreur lors de la création du compte", error: error.message });
   }
