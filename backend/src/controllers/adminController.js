@@ -4,7 +4,7 @@ const DoctorProfile = require('../models/DoctorProfile');
 
 exports.createStaffAccount = async (req, res) => {
   try {
-    const { email, password, role, firstName, lastName, specialty } = req.body;
+    const { email, password, role, firstName, lastName, specialty, baseFee } = req.body;
 
     // 1. Sécurité : On vérifie que l'admin n'essaie pas de créer un patient ici (il y a une route pour ça)
     if (!['medecin', 'secretaire'].includes(role)) {
@@ -31,7 +31,8 @@ exports.createStaffAccount = async (req, res) => {
         account: newAccount._id,
         firstName,
         lastName,
-        specialty // Spécifique aux médecins
+        specialty,
+        baseFee
       });
     } 
     // Si vous avez un SecretaryProfile, vous ajouteriez un "else if (role === 'secretaire')" ici plus tard
