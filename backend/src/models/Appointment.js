@@ -25,6 +25,10 @@ const appointmentSchema = new mongoose.Schema({
     type: Date, 
     required: true 
   },
+  endTime: {
+    type: Date,
+    required: true
+  },
   // Contrainte stricte du cahier des charges : 15, 30 ou 60 minutes
   duration: { 
     type: Number, 
@@ -39,10 +43,10 @@ const appointmentSchema = new mongoose.Schema({
     required: true 
   },
   status: {
-    type: String,
-    enum: ['planifié', 'terminé', 'annulé', 'no-show'],
-    default: 'planifié'
-  }
+  type: String,
+  enum: ['en attente', 'confirmé', 'annulé', 'terminé', 'indisponible'],
+  default: 'en attente'
+}
 }, { timestamps: true });
 
 module.exports = mongoose.model('Appointment', appointmentSchema);

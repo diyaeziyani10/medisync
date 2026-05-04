@@ -5,7 +5,7 @@ const connectDB = require('./src/config/db');
 const cron = require('node-cron');
 const Appointment = require('./src/models/Appointment');
 const emailService = require('./src/utils/emailService');
-
+require('./src/utils/reminderScheduler');
 // Vérifie toutes les heures si des rendez-vous ont lieu dans 24h ou 1h
 cron.schedule('0 * * * *', async () => {
   const now = new Date();
@@ -23,8 +23,9 @@ const appointmentRoutes = require('./src/routes/appointmentRoutes');
 const authRoutes = require('./src/routes/authRoutes');
 const recordRoutes = require('./src/routes/recordRoutes');
 const doctorRoutes = require('./src/routes/doctorRoutes');
+const reviewRoutes = require('./src/routes/reviewRoutes');
+const invoiceRoutes = require('./src/routes/invoiceRoutes');
 connectDB();
-app.use('/api/reviews', reviewRoutes);
 const app = express();
 
 // Middlewares globaux
@@ -36,6 +37,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/appointments', appointmentRoutes);
 app.use('/api/records', recordRoutes);
 app.use('/api/doctors', doctorRoutes);
+app.use('/api/reviews', reviewRoutes);
+app.use('/api/invoices', invoiceRoutes);
 // Middleware global de gestion d'erreurs
 app.use((err, req, res, next) => {
   console.error(err.stack);
